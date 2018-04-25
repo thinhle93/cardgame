@@ -1,3 +1,4 @@
+//import { start } from 'repl';
 
 
 var express = require('express');
@@ -109,16 +110,19 @@ class Playeruser{
     }
 }
 
+var game = null;
+var newdeck = null;
 function newgame(){
-    const newdeck = new Deck()
-    const game = new Game()
-
-
-    
+    newdeck = new Deck()
+    game = new Game()  
 }
+ newgame()
+
+ 
 
 function startgame(){
     newdeck.dealcard(game)
+    
 }
 
 app.post('/player', function(req, res){
@@ -126,12 +130,13 @@ app.post('/player', function(req, res){
     Player.findOne({name: req.body.name}, function(err, player){
         if(player){
             console.log("player exists")
+            res.json({message:'Success', data: player})
 
         }
         else{
             console.log("new player")
             var player = new Player();
-            console.log(req.body)
+            console.log("12312412312", req.body)
             player.name = req.body.name;
         
             player.save(function(err){
@@ -143,8 +148,32 @@ app.post('/player', function(req, res){
                 }
             })
         }
+        //console.log(game.players)
+        if(game.players.length == 0){
+            const player1 = new Playeruser(req.body.name)
+            console.log("================")
+            
+            //console.log(player1)
+            console.log("=================")
+        }
+        if(game.players.length == 1){
+            const player2 = new Playeruser(req.body.name)
+            
+        }
+        
     })
+    
    
+})
+
+app.get('/startgame', function(req, res){
+    startgame();
+    // console.log(game.players[0].name)
+    // console.log(game.players[0].hand)
+    // console.log("+==================+")
+    // console.log(game.players[1].name)
+    // console.log(game.players[1].hand)
+
 })
 
 
@@ -179,6 +208,12 @@ io.sockets.on('connection', function (socket){
     socket.on("newplayer", function(data){
         console.log(data)
     })
+
+    // socket.on('startgame', function(){
+    //     this.startgame()
+    //     console.log("here in startgame")
+    // })
+   
 })
 
 

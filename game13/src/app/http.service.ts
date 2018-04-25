@@ -11,4 +11,8 @@ export class HttpService {
     return this._http.post('/player', player)
   }
 
+  startgame(){
+    return this._http.get('/startgame')
+  }
+
 }

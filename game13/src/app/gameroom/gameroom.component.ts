@@ -21,6 +21,13 @@ export class GameroomComponent implements OnInit {
   
   }
 
+  startgame(){
+    let observable = this._httpService.startgame()
+    observable.subscribe(data =>{
+      console.log("in gameroom component")
+
+    })
+  }
 
   
 }

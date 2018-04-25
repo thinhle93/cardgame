@@ -18,6 +18,9 @@
             $('button').click(function (){
               socket.emit('newplayer', {data: "testing the click"})
             })
+            $('.startgame').click(function(){
+              socket.emit('startgame')
+            })
         })
     </script>
 </head>

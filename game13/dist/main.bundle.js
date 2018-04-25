@@ -170,7 +170,7 @@ module.exports = ""
 /***/ "./src/app/gameroom/gameroom.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  gameroom works!\n\n</p>\n"
+module.exports = "<p>\n  gameroom works!\n\n</p>\n<button (click)=\"startgame()\">DealCard</button>"
 
 /***/ }),
 
@@ -202,6 +202,12 @@ var GameroomComponent = /** @class */ (function () {
         this.player = this._httpService.player;
         console.log(this.player);
         console.log(this._httpService.player);
+    };
+    GameroomComponent.prototype.startgame = function () {
+        var observable = this._httpService.startgame();
+        observable.subscribe(function (data) {
+            console.log("in gameroom component");
+        });
     };
     GameroomComponent = __decorate([
         core_1.Component({
@@ -308,6 +314,9 @@ var HttpService = /** @class */ (function () {
     }
     HttpService.prototype.addNewPlayer = function (player) {
         return this._http.post('/player', player);
+    };
+    HttpService.prototype.startgame = function () {
+        return this._http.get('/startgame');
     };
     HttpService = __decorate([
         core_1.Injectable(),
