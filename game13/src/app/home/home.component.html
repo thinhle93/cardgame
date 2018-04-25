@@ -1,0 +1,3 @@
+
+<input #playerName  type="text" name="name">
+<button (click)="addNewPlayer(playerName.value)" [routerLink]="['/gameroom']">Submit Name</button>
