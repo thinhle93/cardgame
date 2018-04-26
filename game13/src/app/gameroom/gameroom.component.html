@@ -1,5 +1,14 @@
 <p>
-  gameroom works!
 
 </p>
-<button (click)="startgame()">DealCard</button>
+<button  (click)="startgame()"(click)="play()">DealCard</button>
+<button class="cleargame">Clear players</button>
+
+
+
+<div *ngFor="let player of allPlayers">
+  <p>{{player.name}}</p>
+  <p>{{player.hand}}</p>
+
+
+</div>
