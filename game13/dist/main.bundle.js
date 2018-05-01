@@ -64,7 +64,7 @@ module.exports = ""
 /***/ "./src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    Welcome to the Game!\n  </h1>\n  \n</div>\n\n\n\n<router-outlet></router-outlet>\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    Black Jack\n  </h1>\n  \n</div>\n\n\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -170,7 +170,7 @@ module.exports = ""
 /***/ "./src/app/gameroom/gameroom.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n\n</p>\n<button *ngIf=\"!allPlayers\" (click)=\"play()\">DealCard</button>\n<button *ngIf=\"allPlayers\" (click)=\"clear()\">New game</button>\n\n\n\n<div *ngFor=\"let player of allPlayers; let idx = index\"  style=\"border: 2px solid black;\">\n  <div *ngIf=\"player.socketid == sktid\">\n      <button *ngIf=\"player.total < 21\" (click)=\"plyr_idx(idx)\">Take card</button>\n  </div>\n  \n  <p *ngIf=\"player.total > 21\">Bust!</p>\n  <p *ngIf=\"player.total == 21\">You Win!</p>\n  <p>{{player.name}} {{player.total}}</p>\n  <div *ngFor=\"let i of player.hand\">\n      <p>{{i[0]}}-{{i[1]}}</p>\n  </div>\n\n</div>\n\n<!-- <div *ngFor=\"let player of allPlayers\">\n  //this part is for displaying individual hands for each socket instead of every hand\n  <div *ngIf=\"player.socketid == sktid\">\n  <p>{{player.name}}</p>\n  <div *ngFor=\"let i of player.hand\">\n      <p>{{i[0]}}-{{i[1]}}</p>  \n  </div> \n</div>\n</div> -->"
+module.exports = "<p>\n\n</p>\n<button *ngIf=\"!allPlayers\" (click)=\"play()\">DealCard</button>\n<button *ngIf=\"allPlayers\" (click)=\"clear()\">New game</button>\n\n\n\n\n\n\n<div *ngFor=\"let player of allPlayers; let idx = index\"  style=\"border: 2px solid black;\">\n  <div *ngIf=\"player.socketid == sktid\">\n      <button *ngIf=\"player.total < 21\" (click)=\"plyr_idx(idx)\">Take card</button>\n  </div>\n  \n  <p *ngIf=\"player.total > 21\">Bust!</p>\n  <p *ngIf=\"player.total == 21\">You Win!</p>\n  <p>Player: {{player.name}}</p>\n   <p>Total: {{player.total}}</p>\n  <div *ngFor=\"let i of player.hand\">\n      <p>{{i[0]}}-{{i[1]}}</p>\n  </div>\n\n</div>\n\n<!-- <div *ngFor=\"let player of allPlayers\">\n  //this part is for displaying individual hands for each socket instead of every hand\n  <div *ngIf=\"player.socketid == sktid\">\n  <p>{{player.name}}</p>\n  <div *ngFor=\"let i of player.hand\">\n      <p>{{i[0]}}-{{i[1]}}</p>  \n  </div> \n</div>\n</div> -->"
 
 /***/ }),
 
@@ -500,7 +500,7 @@ module.exports = __webpack_require__("./src/main.ts");
 
 /***/ }),
 
-/***/ 1:
+/***/ 3:
 /***/ (function(module, exports) {
 
 /* (ignored) */

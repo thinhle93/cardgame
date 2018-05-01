@@ -6,6 +6,9 @@
 
 
 
+
+
+
 <div *ngFor="let player of allPlayers; let idx = index"  style="border: 2px solid black;">
   <div *ngIf="player.socketid == sktid">
       <button *ngIf="player.total < 21" (click)="plyr_idx(idx)">Take card</button>
@@ -13,7 +16,8 @@
   
   <p *ngIf="player.total > 21">Bust!</p>
   <p *ngIf="player.total == 21">You Win!</p>
-  <p>{{player.name}} {{player.total}}</p>
+  <p>Player: {{player.name}}</p>
+   <p>Total: {{player.total}}</p>
   <div *ngFor="let i of player.hand">
       <p>{{i[0]}}-{{i[1]}}</p>
   </div>
