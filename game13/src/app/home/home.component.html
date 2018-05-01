@@ -1,5 +1,11 @@
+<p>Enter your ingame name</p>
+<form (submit)="addNewPlayer()">
 
-<input #playerName  type="text" name="name">
-<button (click)="addNewPlayer(playerName.value)" [routerLink]="['/gameroom']">Submit Name</button>
+<input type="text" name="newPlayer.name" [(ngModel)]="newPlayer.name">
+<p *ngIf="newPlayer.name.length > 0"><button>Submit Name</button></p>
 
-<button class="test">Test</button>
+</form>
+
+
+
+

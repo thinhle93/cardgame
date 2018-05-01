@@ -10,6 +10,7 @@ const SERVER_URL = 'http://localhost:8000';
 @Injectable()
 export class HttpService {
   player: any;
+  socketid:any;
   private socket;
 
 
@@ -32,8 +33,28 @@ export class HttpService {
 
   onBroadcast(){
     return new Observable<object>(observer => {
-      this.socket.on('broadcast');
+      this.socket.on('broadcast', (data) => {observer.next(data) 
+      console.log("in broadcast service", data)
+      });
     });
+  }
+
+  // onPassedCard(){
+  //   return new Observable<object>(observer => {
+  //     this.socket.on('passedcard', (data) => {observer.next(data) 
+  //     console.log("in passedCard service", data)
+  //     });
+  //   });
+  // }
+
+  clear(){
+    this.socket.emit("clear")
+  }
+
+
+  addCard(idx){
+    this.socket.emit('addcard', idx)
+    console.log("in addCard service")
   }
   initSocket() {
     this.socket = io(SERVER_URL);
@@ -57,7 +78,11 @@ export class HttpService {
 
   oninitial(){
     return new Observable<object>(observer => {
-      this.socket.on('initial', (data) => observer.next(data));
+      this.socket.on('initial', (data) => {observer.next(data) 
+        console.log("12342q353545", data)
+        this.socketid = data['socketid']
+      });
+     
     });
   }
 }

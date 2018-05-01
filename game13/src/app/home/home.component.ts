@@ -9,10 +9,11 @@ import { ActivatedRoute, Params, Router } from '@angular/router'
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private _httpService: HttpService,
-  private _router: Router, 
-  private _route: ActivatedRoute
-  ) {this.initToConnection()}
+  constructor(
+    private _httpService: HttpService,
+    private _router: Router, 
+    private _route: ActivatedRoute
+  ) { this.initToConnection() }
 
   newPlayer: any;
   ioConnection: any;
@@ -24,12 +25,15 @@ export class HomeComponent implements OnInit {
     //this._httpService.on("initial")
     
   }
-  addNewPlayer(name){
-    this.newPlayer.name = name //need this line to get name from the html
+  addNewPlayer(){
+    console.log("in home component")
+    
+    // this.newPlayer.name = name //need this line to get name from the html
     let observable = this._httpService.addNewPlayer(this.newPlayer)
     observable.subscribe(data =>{
       //console.log("123123123", data)
-
+      this._router.navigate(['/gameroom'])
+      //return false;
     })
   }
   

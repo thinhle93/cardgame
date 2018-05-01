@@ -1,14 +1,31 @@
 <p>
 
 </p>
-<button  (click)="startgame()"(click)="play()">DealCard</button>
-<button class="cleargame">Clear players</button>
+<button *ngIf="!allPlayers" (click)="play()">DealCard</button>
+<button *ngIf="allPlayers" (click)="clear()">New game</button>
 
 
 
-<div *ngFor="let player of allPlayers">
-  <p>{{player.name}}</p>
-  <p>{{player.hand}}</p>
-
+<div *ngFor="let player of allPlayers; let idx = index"  style="border: 2px solid black;">
+  <div *ngIf="player.socketid == sktid">
+      <button *ngIf="player.total < 21" (click)="plyr_idx(idx)">Take card</button>
+  </div>
+  
+  <p *ngIf="player.total > 21">Bust!</p>
+  <p *ngIf="player.total == 21">You Win!</p>
+  <p>{{player.name}} {{player.total}}</p>
+  <div *ngFor="let i of player.hand">
+      <p>{{i[0]}}-{{i[1]}}</p>
+  </div>
 
 </div>
+
+<!-- <div *ngFor="let player of allPlayers">
+  //this part is for displaying individual hands for each socket instead of every hand
+  <div *ngIf="player.socketid == sktid">
+  <p>{{player.name}}</p>
+  <div *ngFor="let i of player.hand">
+      <p>{{i[0]}}-{{i[1]}}</p>  
+  </div> 
+</div>
+</div> -->

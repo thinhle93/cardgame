@@ -89478,7 +89478,7 @@ var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 var NodeWebSocket;
 if (typeof window === 'undefined') {
   try {
-    NodeWebSocket = __webpack_require__(3);
+    NodeWebSocket = __webpack_require__(1);
   } catch (e) { }
 }
 

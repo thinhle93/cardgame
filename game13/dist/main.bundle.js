@@ -64,7 +64,7 @@ module.exports = ""
 /***/ "./src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    Welcome to {{ title }}!\n  </h1>\n  \n</div>\n\n\n\n<router-outlet></router-outlet>\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    Welcome to the Game!\n  </h1>\n  \n</div>\n\n\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -170,7 +170,7 @@ module.exports = ""
 /***/ "./src/app/gameroom/gameroom.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n\n</p>\n<button  (click)=\"startgame()\"(click)=\"play()\">DealCard</button>\n<button class=\"cleargame\">Clear players</button>\n\n\n\n<div *ngFor=\"let player of allPlayers\">\n  <p>{{player.name}}</p>\n  <p>{{player.hand}}</p>\n\n\n</div>"
+module.exports = "<p>\n\n</p>\n<button *ngIf=\"!allPlayers\" (click)=\"play()\">DealCard</button>\n<button *ngIf=\"allPlayers\" (click)=\"clear()\">New game</button>\n\n\n\n<div *ngFor=\"let player of allPlayers; let idx = index\"  style=\"border: 2px solid black;\">\n  <div *ngIf=\"player.socketid == sktid\">\n      <button *ngIf=\"player.total < 21\" (click)=\"plyr_idx(idx)\">Take card</button>\n  </div>\n  \n  <p *ngIf=\"player.total > 21\">Bust!</p>\n  <p *ngIf=\"player.total == 21\">You Win!</p>\n  <p>{{player.name}} {{player.total}}</p>\n  <div *ngFor=\"let i of player.hand\">\n      <p>{{i[0]}}-{{i[1]}}</p>\n  </div>\n\n</div>\n\n<!-- <div *ngFor=\"let player of allPlayers\">\n  //this part is for displaying individual hands for each socket instead of every hand\n  <div *ngIf=\"player.socketid == sktid\">\n  <p>{{player.name}}</p>\n  <div *ngFor=\"let i of player.hand\">\n      <p>{{i[0]}}-{{i[1]}}</p>  \n  </div> \n</div>\n</div> -->"
 
 /***/ }),
 
@@ -192,33 +192,62 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 var http_service_1 = __webpack_require__("./src/app/http.service.ts");
 var router_1 = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
+//import { SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER } from 'constants';
 var GameroomComponent = /** @class */ (function () {
-    // ioConnection: any;
-    // io;
     function GameroomComponent(_httpService, _router, _route) {
         this._httpService = _httpService;
         this._router = _router;
         this._route = _route;
-        this.listenbroadcast = this._httpService.onBroadcast().subscribe(function () {
-            console.log("in gameroom component");
-        });
+        this.initToConnection();
     }
     GameroomComponent.prototype.ngOnInit = function () {
         this.player = this._httpService.player;
         //console.log(this.player)
         //console.log(this._httpService.player)
+        this.sktid = this._httpService.socketid;
+        console.log("in the nginit of gameroom", this.sktid);
     };
-    GameroomComponent.prototype.startgame = function () {
+    GameroomComponent.prototype.initToConnection = function () {
+        //this._httpService.initSocket();
         var _this = this;
-        var observable = this._httpService.startgame();
-        observable.subscribe(function (data) {
+        //listens to the broadcast to deal cards to everyone
+        this.listenbroadcast = this._httpService.onBroadcast().subscribe(function (data) {
             console.log("in gameroom component");
-            _this.allPlayers = data["data"];
-            console.log("123asdfasdfa12312312", _this.allPlayers);
+            console.log("=================");
+            console.log(data['allplayers']);
+            _this.allPlayers = data['allplayers'];
+            console.log("=================");
         });
+        //for adding cards to each player hand
+        // this.listenpassedcard = this._httpService.onPassedCard().subscribe((data) => {
+        // })
+        // this.ioConnection = this._httpService.oninitial().subscribe((data) => {
+        //   console.log(data)
+        //   // this.socketid = data['socketid']
+        //   this.newPlayer.socketid = data['socketid']
+        //   console.log(this.newPlayer)
+        // });
     };
+    GameroomComponent.prototype.clear = function () {
+        var observable = this._httpService.clear();
+        console.log("in gameroom component clear");
+        this.play();
+    };
+    // startgame(){
+    //   let observable = this._httpService.startgame()
+    //   observable.subscribe(data =>{
+    //     console.log("in gameroom component")
+    //     this.allPlayers = data["data"]
+    //     console.log("123asdfasdfa12312312",this.allPlayers)
+    //   })
+    // }
     GameroomComponent.prototype.play = function () {
         var play = this._httpService.broadcast();
+    };
+    GameroomComponent.prototype.plyr_idx = function (idx) {
+        var observable = this._httpService.addCard(idx);
+        console.log("pressing plyr_idx");
+        console.log(typeof this.allPlayers[0].hand[0][0]);
     };
     GameroomComponent = __decorate([
         core_1.Component({
@@ -247,7 +276,7 @@ module.exports = ""
 /***/ "./src/app/home/home.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n<input #playerName  type=\"text\" name=\"name\">\n<button (click)=\"addNewPlayer(playerName.value)\" [routerLink]=\"['/gameroom']\">Submit Name</button>\n\n<button class=\"test\">Test</button>"
+module.exports = "<p>Enter your ingame name</p>\n<form (submit)=\"addNewPlayer()\">\n\n<input type=\"text\" name=\"newPlayer.name\" [(ngModel)]=\"newPlayer.name\">\n<p *ngIf=\"newPlayer.name.length > 0\"><button>Submit Name</button></p>\n\n</form>\n\n\n\n\n"
 
 /***/ }),
 
@@ -280,11 +309,15 @@ var HomeComponent = /** @class */ (function () {
         this.newPlayer = { name: "", socketid: this.socketid };
         //this._httpService.on("initial")
     };
-    HomeComponent.prototype.addNewPlayer = function (name) {
-        this.newPlayer.name = name; //need this line to get name from the html
+    HomeComponent.prototype.addNewPlayer = function () {
+        var _this = this;
+        console.log("in home component");
+        // this.newPlayer.name = name //need this line to get name from the html
         var observable = this._httpService.addNewPlayer(this.newPlayer);
         observable.subscribe(function (data) {
             //console.log("123123123", data)
+            _this._router.navigate(['/gameroom']);
+            //return false;
         });
     };
     HomeComponent.prototype.initToConnection = function () {
@@ -364,8 +397,25 @@ var HttpService = /** @class */ (function () {
     HttpService.prototype.onBroadcast = function () {
         var _this = this;
         return new Observable_1.Observable(function (observer) {
-            _this.socket.on('broadcast');
+            _this.socket.on('broadcast', function (data) {
+                observer.next(data);
+                console.log("in broadcast service", data);
+            });
         });
+    };
+    // onPassedCard(){
+    //   return new Observable<object>(observer => {
+    //     this.socket.on('passedcard', (data) => {observer.next(data) 
+    //     console.log("in passedCard service", data)
+    //     });
+    //   });
+    // }
+    HttpService.prototype.clear = function () {
+        this.socket.emit("clear");
+    };
+    HttpService.prototype.addCard = function (idx) {
+        this.socket.emit('addcard', idx);
+        console.log("in addCard service");
     };
     HttpService.prototype.initSocket = function () {
         this.socket = io(SERVER_URL);
@@ -388,7 +438,11 @@ var HttpService = /** @class */ (function () {
     HttpService.prototype.oninitial = function () {
         var _this = this;
         return new Observable_1.Observable(function (observer) {
-            _this.socket.on('initial', function (data) { return observer.next(data); });
+            _this.socket.on('initial', function (data) {
+                observer.next(data);
+                console.log("12342q353545", data);
+                _this.socketid = data['socketid'];
+            });
         });
     };
     HttpService = __decorate([
@@ -446,7 +500,7 @@ module.exports = __webpack_require__("./src/main.ts");
 
 /***/ }),
 
-/***/ 3:
+/***/ 1:
 /***/ (function(module, exports) {
 
 /* (ignored) */

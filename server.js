@@ -32,12 +32,19 @@ class Game {
 }
 class Deck{
     constructor(){
-        this.names = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        this.names = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K'];
         this.suits = ['\u2665','\u2666','\u2660','\u2663'];
         this.deck = [];
         this.savedeck = []
         
+        this.makedeck()
+       
+        // this.savedeck = this.deck;
+        this.shuffle()
         
+    }
+
+    makedeck(){
         for(let i = 0; i<this.names.length; i++){
             
             for(let x = 0; x<this.suits.length; x++){
@@ -45,15 +52,10 @@ class Deck{
                 card.push(this.names[i]);
                 card.push(this.suits[x]);
                 this.deck.push(card);
-                this.savedeck.push(card);
+                //this.savedeck.push(card);
             }
         }
-
-        this.shuffle()
-        
     }
-    
-        
     
     shuffle(deck){
          var m = this.deck.length, t, i;
@@ -70,12 +72,27 @@ class Deck{
             this.deck[i] = t;
           }
 
-          return this;
+          return deck;
         }
 
-    reset(){
-        this.deck = this.savedeck;
+    reset(Game){
+
+        this.makedeck();
+		this.shuffle(this.deck)
+
+        for(var i = 0; i < Game.players.length;i++){
+            Game.players[i].hand = [];
+        }
         return this;
+        // console.log("oooooooooooooooooooooo")
+        // console.log("this is the saved deck before", this.savedeck)
+        // console.log("this is the leftover deck",this.deck)
+    
+        // this.deck = this.savedeck;
+        // console.log("this is the reset deck",this.deck)
+        // console.log("this is the reset saved deck",this.savedeck)
+        // console.log("oooooooooooooooooooooo")
+       // return this;
     }
     
 
@@ -83,14 +100,24 @@ class Deck{
 
         for (var x = 0; x < Game.players.length; x++){
 
-            for (var i = 0; i < 13; i++) {
+           for (var i = 0; i < 2; i++) {
+                console.log("in the dealcard fuction", Game.players[x].hand)
             Game.players[x].hand.push(this.deck.pop());
+            //for testing purposes
+            // Game.players[x].hand.push(["Ace", '\u2665'])
+            // Game.players[x].hand.push(["Ace", '\u2666'])
+            // Game.players[x].hand.push([8, '\u2666'])
             }
+            Game.players[x].totalValue()
         }
         return this;
     }
 
-
+    passcard(Game, idx){
+        
+        Game.players[idx].hand.push(this.deck.pop())
+        Game.players[idx].totalValue()
+    }
     
 } 
 
@@ -99,13 +126,47 @@ class Playeruser{
         this.name = name;
         this.hand = [];
         this.socketid = id;
+        this.total = 0;
         this.addtolist();
     }
     
     addtolist(){
         game.players.push(this)
     }	
-    pickcards(num){
+
+    
+    totalValue(){ //this is for counting total value for 21
+        this.total = 0;
+        var Ace = 0; 
+        for(var i = 0; i < this.hand.length; i++){
+            if(this.hand[i][0] == "J" || this.hand[i][0] == "Q" || this.hand[i][0] == "K"){
+                this.total += 10;
+            }
+            else if(this.hand[i][0] == "Ace"){
+                this.total += 11;
+                Ace += 1;
+            }
+            else{
+                this.total += this.hand[i][0];
+            }
+        }
+        if (Ace > 0 && this.total > 21){
+            for(var i = 0; i < Ace; i++){
+                if(this.total > 21){
+                    this.total -= 10;
+                }
+                
+            }
+            
+
+        }
+        // else if (Ace == true && (this.total += 11 > 21) ){
+        //     this.total -= 10;
+        // }
+    }
+
+
+    pickcards(num){ //this is for 13 to pick a card or cards to play
         return this.hand.splice(num, 1);
 
     }
@@ -123,15 +184,16 @@ function newgame(){
     
 }
 
-function cleargame(){
+function cleargame(game){
     for(var i = 0; i < game.players.length; i++){
         
         
         game.players[i].hand = []
-        console.log(game.players[i].hand)
+        //console.log(game.players[i].hand)
     }
-    newdeck.reset()
-    console.log(newdeck.deck)
+    newdeck.reset(game)
+    // console.log("in server clear game")
+    // console.log(newdeck.deck)
 
 }
  newgame()
@@ -206,16 +268,16 @@ app.post('/player', function(req, res){
    
 })
 
-app.get('/startgame', function(req, res){
-    startgame();
-    res.json({message:'Success', data: game.players})
-    for(var i = 0; i < game.players.length; i++){
-        console.log("============")
-        console.log(game.players[i].name)
-        console.log(game.players[i].hand)
-    }
+// app.get('/startgame', function(req, res){
+//     startgame();
+//     res.json({message:'Success', data: game.players})
+//     for(var i = 0; i < game.players.length; i++){
+//         console.log("============")
+//         console.log(game.players[i].name)
+//         console.log(game.players[i].hand)
+//     }
 
-})
+// })
 
 
 
@@ -261,9 +323,26 @@ io.sockets.on('connection', (socket) => {
     })
 
     socket.on("broadcasting", function(){
-        console.log("here in server broadcasting")
-        io.emit('broadcast')
+        // console.log("here in server broadcasting")
+        // console.log(game.players)
+        startgame();
+        io.emit('broadcast', {allplayers: game.players})
     })
+
+    socket.on("clear", function(){
+        cleargame(game);
+    })
+
+    socket.on("addcard", function(data){
+        //console.log("in addcard socket addcard")
+        //console.log(data), data is only the player's index 
+        newdeck.passcard(game, data)
+        io.emit("broadcast", {allplayers: game.players})
+    })
+
+
+
+
 })
 
 
